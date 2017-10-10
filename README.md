@@ -44,37 +44,52 @@
 
 接口形式：
 
-.getSchedulingByEmployeeId( employeeId, duration )
+.getSchedulingByEmployeeIds( employeeIds, duration )
 
-**employeeId**
+**employeeIds**
 
-Type: String
+Type: Array
 
-员工的工号
+员工的工号列表
 
 **duration**
 
 Type: String or Array
 
-如果是String，则查询这个员工某一天的排班信息，如果是数组，那么数组的第一个元素是开始时间，数组的第二个元素是截止时间，这个时候查询的是这个时间段的排班列表信息
+如果是String，则查询这些员工某一天的排班信息，如果是数组，那么数组的第一个元素是开始时间，数组的第二个元素是截止时间，这个时候查询的是这个时间段的排班列表信息
 
 返回信息示例：
 
 ```js
 {
     "error": 0,
-    "data": [
+    "data": [
         {
-            "date": "2017-10-09",
-            "shiftsName": "默认排班",
-            "timeZone": [
+            "employeeId": "012222",
+            "scheduling": [
                 {
-                    "startTime": "9:00",
-                    "endTime": "18:00"
+                    "date": "2017-10-09",
+                    "shiftsName": "默认排班",
+                    "timeZone": [
+                        {
+                            "startTime": "9:00",
+                            "endTime": "18:00"
+                        },
+                        {
+                            "startTime": "9:30",
+                            "endTime": "18:30"
+                        }
+                    ]
                 },
                 {
-                    "startTime": "9:30",
-                    "endTime": "18:30"
+                    "date": "2017-10-10",
+                    "shiftsName": "早班",
+                    "timeZone": [
+                        {
+                            "startTime": "1:00",
+                            "endTime": "9:00"
+                        }
+                    ]
                 }
             ]
         }
@@ -84,11 +99,11 @@ Type: String or Array
 
 ## 需要公休日管理提供的接口
 
-### 获取一段时间的公休日列表和时长（时长单位为小时，用于排班管理统计员工一段时间的默认排班信息的时候去除公休日的情况）
+### 获取一段时间的工作日和公休日情况
 
 接口形式：
 
-.getPublicHolidays( startDate, endDate )
+.getDays( startDate, endDate )
 
 **startDate**
 
@@ -108,8 +123,9 @@ Type: String
 {
     "error": 0,
     "data": {
-        "duration": 144, //时长
-        "dateList": ["2017-10-01", "2017-10-02"] //公休日的日期
+        "workDayLength": 20, // 工作日的天数
+        "holidayLength": 10, // 公休日的天数
+        "holidayList": ["2017-10-01", "2017-10-02"] // 此处待定，这里可能会需要返回这个时间段每一天是工作日还是公休日，因为排班和考勤统计都需要日期列表，建议工作日和公休日都由公休日管理模块统一管理，其他模块不作自行判断，便于以后调整算法的时候好维护
     }
 }
 ```
@@ -134,8 +150,8 @@ Type: Array
     "data": [
         {
             "employeeId": "01111",
-            "total": 5,
-            "surplus": 3.5
+            "total": 5, // 总共年假
+            "surplus": 3.5 // 剩余年假
         },
         {
             "employeeId": "02222",
